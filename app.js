@@ -15,8 +15,10 @@
   const $ = (sel, root=document) => root.querySelector(sel);
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = (n, digits=2) => Number.isFinite(Number(n)) ? new Intl.NumberFormat('pt-BR',{maximumFractionDigits:digits}).format(Number(n)) : '—';
-  const num = (form,key, fallback=0) => { const v=Number(form.elements[key]?.value); return Number.isFinite(v)?v:fallback; };
-  const val = (form,key) => String(form.elements[key]?.value ?? '').trim();
+  // namedItem avoids collisions with collection properties such as elements.length.
+  const control = (form,key) => form.elements.namedItem(key);
+  const num = (form,key, fallback=0) => { const v=Number(control(form,key)?.value); return Number.isFinite(v)?v:fallback; };
+  const val = (form,key) => String(control(form,key)?.value ?? '').trim();
   const optionList = (items, selected='') => items.map(v=>{const value=typeof v==='string'?v:v.value,label=typeof v==='string'?v:v.label;return `<option value="${esc(value)}" ${String(value)===String(selected)?'selected':''}>${esc(label)}</option>`;}).join('');
   const field = (label,name,opts={}) => {
     const {type='number',value='',unit='',placeholder='',min,max,step='any',required=false,full=false,hint='',options,readonly=false}=opts;
