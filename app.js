@@ -32,7 +32,7 @@
   };
   const panel = (title, sub, body) => `<section class="panel"><h2>${title}</h2>${sub?`<p class="panel-sub">${sub}</p>`:''}${body}</section>`;
   const selectField = (label,name,options,value,opts={}) => field(label,name,{options,value,...opts});
-  const voltageOptions=[127,220,230,380,400,440,460,480,2300,4160,6600,11400,13800,23000,34500,69000,88000,138000,230000].map(v=>({value:v,label:v>=1000?`${fmt(v/1000,1)} kV`:`${v} V`}));
+  const voltageOptions=[127,220,380,440,13800,34500,69000,138000,230000].map(v=>({value:v,label:v>=1000?`${fmt(v/1000,1)} kV`:`${v} V`}));
   const sectionOptions=D.trunking.cables.map(x=>x.gauge).filter(x=>x<=185).map(x=>({value:x,label:`${fmt(x,2)} mm²`}));
   const insulationOptions=['PVC','XLPE','EPR','HEPR'];
   const cableConstructionOptions=[{value:'single',label:'Unipolar (cabo simples)'},{value:'multi',label:'Multipolar (cabo múltiplo)'}];
