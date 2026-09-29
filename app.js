@@ -21,14 +21,14 @@
   const val = (form,key) => String(control(form,key)?.value ?? '').trim();
   const optionList = (items, selected='') => items.map(v=>{const value=typeof v==='string'?v:v.value,label=typeof v==='string'?v:v.label;return `<option value="${esc(value)}" ${String(value)===String(selected)?'selected':''}>${esc(label)}</option>`;}).join('');
   const field = (label,name,opts={}) => {
-    const {type='number',value='',unit='',placeholder='',min,max,step='any',required=false,full=false,hint='',options,readonly=false}=opts;
+    const {type='number',value='',unit='',placeholder='',min,max,step='any',required=false,full=false,hint='',options,readonly=false,help=''}=opts;
     const optionHtml=items=>items.map(o=>typeof o==='string'?`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(o)}</option>`:`<option value="${esc(o.value)}" ${String(o.value)===String(value)?'selected':''}>${esc(o.label)}</option>`).join('');
     let control;
     if(options) control=`${unit?'<div class="input-unit">':''}<select name="${esc(name)}" ${required?'required':''}>${optionHtml(options)}</select>${unit?`<em>${esc(unit)}</em></div>`:''}`;
     else if(type==='textarea') control=`<textarea name="${esc(name)}" placeholder="${esc(placeholder)}" ${required?'required':''}>${esc(value)}</textarea>`;
     else if(type==='range') control=`<div class="range-control"><input name="${esc(name)}" type="range" value="${esc(value)}" min="${min}" max="${max}" step="${step}" data-range-output="${esc(name)}"><output data-range-label="${esc(name)}">${esc(value)} ${esc(unit)}</output></div>`;
     else control=`<div class="${unit?'input-unit':''}"><input name="${esc(name)}" type="${type}" value="${esc(value)}" placeholder="${esc(placeholder)}" ${min!==undefined?`min="${min}"`:''} ${max!==undefined?`max="${max}"`:''} ${step?`step="${step}"`:''} ${readonly?'readonly':''} ${required?'required':''}>${unit?`<em>${esc(unit)}</em>`:''}</div>`;
-    return `<div class="field ${full?'full':''}"><label>${esc(label)}${required?' *':''}</label>${control}${hint?`<div class="field-hint">${esc(hint)}</div>`:''}</div>`;
+    return `<div class="field ${full?'full':''}"><label>${esc(label)}${help?` <span class="field-help" tabindex="0" role="note" data-tooltip="${esc(help)}" title="${esc(help)}" aria-label="Ajuda: ${esc(help)}">?</span>`:''}${required?' *':''}</label>${control}${hint?`<div class="field-hint">${esc(hint)}</div>`:''}</div>`;
   };
   const panel = (title, sub, body) => `<section class="panel"><h2>${title}</h2>${sub?`<p class="panel-sub">${sub}</p>`:''}${body}</section>`;
   const selectField = (label,name,options,value,opts={}) => field(label,name,{options,value,...opts});
@@ -66,7 +66,12 @@
       ['Transformador',[['Tensão no primário','primaryVoltage'],['Tensão no secundário','secondaryVoltage'],['Impedância','impedance'],['Corrente percentual em vazio','noLoadCurrent'],['Perdas de potência em vazio','noLoadLoss']]]
     ];
     const yesNo=[{value:'',label:'Selecione'},{value:'Sim',label:'Sim'},{value:'Não',label:'Não'}];
-    const breakers=[40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3200,4000,5000,6300].map(a=>({value:a,label:`${a} A`}));
+    const breakerRatings=[
+      ...[2,3,4,6,10,13,16,20,25,32,40,50,63,80,100,125].map(a=>({value:`${a} A — DIN`,label:`${a} A — DIN`})),
+      ...[16,20,25,32,40,50,63,80,100,125,160,200,250,320,400,500,630,800,1000,1250,1600,2000,2500,3200].map(a=>({value:`${a} A — MCCB`,label:`${a} A — MCCB`})),
+      ...[630,800,1000,1250,1600,2000,2500,3200,4000,5000,6300].map(a=>({value:`${a} A — ACB`,label:`${a} A — ACB`}))
+    ];
+    const breakerHelp='DIN / MCB: mini disjuntores modulares, 2–125 A nesta lista (linhas variam; iC60 até 63 A e NG125 até 125 A). MCCB: caixa moldada, famílias de 16–3.200 A. ACB: disjuntor aberto, tipicamente 630–6.300 A. As faixas se sobrepõem; a corrente sozinha não define o tipo. Confirme família, tensão, capacidade de interrupção, polos e ajustes no catálogo do fabricante.';
     const groundOptions=['TN-S','TN-C','TN-C-S','TT','IT','Outro'];
     const installOptions=['Eletrocalha','Eletroduto embutido','Eletroduto aparente','Leito para cabos','Bandeja','Canaleta','Perfilado','Enterrado diretamente','Aéreo','Outro'];
     const fields=groups.map(([title,items])=>panel(title,'',`<div class="field-grid">${items.map(([label,name,span])=>{
@@ -83,7 +88,7 @@
       if(name==='soil')return field(label,name,{value:'',min:0,step:.01,unit:'Ω·m',placeholder:'Informar valor'});
       if(name==='infraSpace')return selectField(label,name,['Selecione','Pouco','Médio','Muito'],'Selecione');
       if(name==='faultCurrent')return field(label,name,{value:'',min:0,step:.01,unit:'kA',placeholder:'Informar ou importar'});
-      if(name==='upstreamBreaker')return selectField(label,name,breakers,40,{unit:'A'});
+      if(name==='upstreamBreaker')return selectField(label,name,breakerRatings,'40 A — DIN',{help:breakerHelp});
       if(['expansion','softStarter','speedControl','sheltered'].includes(name))return selectField(label,name,yesNo,'');
       if(name==='inertia')return selectField(label,name,['Selecione','Baixa','Média','Alta'],'Selecione');
       if(name==='impedance'||name==='noLoadCurrent')return field(label,name,{value:'',min:0,step:.01,unit:'%',placeholder:'Informar valor'});
