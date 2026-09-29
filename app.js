@@ -71,7 +71,7 @@
       ...[16,20,25,32,40,50,63,80,100,125,160,200,250,320,400,500,630,800,1000,1250,1600,2000,2500,3200].map(a=>({value:`${a} A — MCCB`,label:`${a} A — MCCB`})),
       ...[630,800,1000,1250,1600,2000,2500,3200,4000,5000,6300].map(a=>({value:`${a} A — ACB`,label:`${a} A — ACB`}))
     ];
-    const breakerHelp='DIN / MCB: mini disjuntores modulares, 2–125 A nesta lista (linhas variam; iC60 até 63 A e NG125 até 125 A). MCCB: caixa moldada, famílias de 16–3.200 A. ACB: disjuntor aberto, tipicamente 630–6.300 A. As faixas se sobrepõem; a corrente sozinha não define o tipo. Confirme família, tensão, capacidade de interrupção, polos e ajustes no catálogo do fabricante.';
+    const breakerHelp='DIN — Mini disjuntores usados em residências e comércios: 2 a 125 A.\nMCCB — Disjuntores em caixa moldada usados em QGBTs e indústrias: 16 a 3.200 A.\nACB — Disjuntores abertos usados em entradas principais e quadros de grande porte: 630 a 6.300 A.\nUma mesma corrente pode existir em mais de um tipo.';
     const groundOptions=['TN-S','TN-C','TN-C-S','TT','IT','Outro'];
     const installOptions=['Eletrocalha','Eletroduto embutido','Eletroduto aparente','Leito para cabos','Bandeja','Canaleta','Perfilado','Enterrado diretamente','Aéreo','Outro'];
     const fields=groups.map(([title,items])=>panel(title,'',`<div class="field-grid">${items.map(([label,name,span])=>{
